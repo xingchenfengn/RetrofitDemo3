@@ -1,7 +1,7 @@
 package com.xingzhiqiao.retrofitdemo.http;
 
 /**
- * Created by liukun on 16/3/10.
+ * Created by xingzhiqiao on 16/10/10.
  */
 public interface ProgressCancelListener {
     void onCancelProgress();
