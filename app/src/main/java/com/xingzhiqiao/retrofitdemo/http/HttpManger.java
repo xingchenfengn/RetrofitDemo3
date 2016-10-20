@@ -36,8 +36,6 @@ import rx.schedulers.Schedulers;
 public class HttpManger {
 
     private static String TAG = HttpManger.class.getName();
-
-
     public static String BASE_URL = "http://api.tv.test.cnrmobile.com/";
     private volatile static HttpManger mInstance;
     private static CnrApi cnrRequest;
@@ -49,7 +47,7 @@ public class HttpManger {
 
         OkHttpClient.Builder builder = new OkHttpClient.Builder();
         HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
-        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);//负责打印 Log
         builder.connectTimeout(30, TimeUnit.SECONDS);
         builder.cache(cache);
         builder.addInterceptor(mRewriteCacheControlInterceptor);
@@ -116,7 +114,7 @@ public class HttpManger {
 
             Request request = chain.request();
             if (!NetWorkUtil.isNetworkConnected()) {
-                request = request.newBuilder().cacheControl(CacheControl.FORCE_CACHE).build();
+                request = request.newBuilder().cacheControl(CacheControl.FORCE_CACHE).build();//只能缓存 get 请求的数据
             }
             Response originalResponse = chain.proceed(request);
             if (NetWorkUtil.isNetworkConnected()) {
