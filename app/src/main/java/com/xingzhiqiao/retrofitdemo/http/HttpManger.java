@@ -20,9 +20,7 @@ import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
-import retrofit2.CallAdapter;
 import retrofit2.Callback;
-import retrofit2.Converter;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -39,9 +37,6 @@ public class HttpManger {
 
     private static String TAG = HttpManger.class.getName();
 
-    private static int cacheSize = 10 * 1024 * 1024;
-    private static Converter.Factory gsonConverterFactory = GsonConverterFactory.create();
-    private static CallAdapter.Factory rxJavaCallAdapterFactory = RxJavaCallAdapterFactory.create();
 
     public static String BASE_URL = "http://api.tv.test.cnrmobile.com/";
     private volatile static HttpManger mInstance;
@@ -64,7 +59,7 @@ public class HttpManger {
 
         Retrofit retrofit = new Retrofit.Builder()
                 .client(builder.build())
-                .addConverterFactory(gsonConverterFactory)
+                .addConverterFactory(GsonConverterFactory.create())
                 .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
                 .baseUrl(BASE_URL)
                 .build();
@@ -82,6 +77,8 @@ public class HttpManger {
 
             }
         });
+
+
     }
 
     public CnrApi getCnrRequest() {
@@ -103,10 +100,11 @@ public class HttpManger {
 
     public void doRequest(Observable<? extends BaseResponse> observable, Subscriber subscriber) {
 
-        Observable observable1 = observable
-                .subscribeOn(Schedulers.io())
-                .unsubscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread());
+        Observable<? extends BaseResponse> observable1 =
+                observable
+                        .subscribeOn(Schedulers.io())
+                        .unsubscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread());
         observable1.subscribe(subscriber);
 
     }
@@ -124,13 +122,12 @@ public class HttpManger {
             if (NetWorkUtil.isNetworkConnected()) {
                 originalResponse = originalResponse.newBuilder().header("Cache-Control", "public, max-age=60").removeHeader("Pragma").build();
             } else {
-                int maxStale = 60 * 60 * 24 * 28; // 无网络时，设置超时为4周
+                int maxStale = 60 * 60 * 24 * 28; // 无网络时，设置缓存时间为4周
                 originalResponse = originalResponse.newBuilder()
                         .header("Cache-Control", "public, only-if-cached, max-stale=" + maxStale)
                         .removeHeader("Pragma")
                         .build();
             }
-//            originalResponse.body().close();
             return originalResponse;
         }
     };

@@ -1,19 +1,17 @@
 package com.xingzhiqiao.retrofitdemo.http;
 
 import android.content.Context;
+import android.net.ParseException;
 import android.util.Log;
 import android.widget.Toast;
 
 import com.xingzhiqiao.retrofitdemo.DemoApplication;
 import com.xingzhiqiao.retrofitdemo.utils.NetWorkUtil;
 
-import java.net.ConnectException;
 import java.net.SocketTimeoutException;
 
 import retrofit2.adapter.rxjava.HttpException;
 import rx.Subscriber;
-
-import static android.icu.lang.UCharacter.GraphemeClusterBreak.L;
 
 /**
  * 用于在Http请求开始时，自动显示一个ProgressDialog
@@ -79,17 +77,16 @@ public class ProgressSubscriber<T> extends Subscriber<T> implements ProgressCanc
             return;
         }
         if (e instanceof HttpException) {
-            Log.d("TAG", "HttpException");
             HttpException exception = (HttpException) e;
             Log.d("TAG", "HttpException" + exception.code());
+            Toast.makeText(DemoApplication.getInstance(), "网络异常", 1).show();
+        } else if (e instanceof ParseException) {
+            Toast.makeText(DemoApplication.getInstance(), "解析出错", 1).show();
+        } else if (e instanceof SocketTimeoutException) {
+            Toast.makeText(context, "网络连接超时", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(context, "请求错误", Toast.LENGTH_SHORT).show();
         }
-//        if (e instanceof SocketTimeoutException) {
-//            Toast.makeText(context, "网络中断，请检查您的网络状态", Toast.LENGTH_SHORT).show();
-//        } else if (e instanceof ConnectException) {
-//            Toast.makeText(context, "网络中断，请检查您的网络状态", Toast.LENGTH_SHORT).show();
-//        } else {
-//            Toast.makeText(context, "错误" + e.getMessage(), Toast.LENGTH_SHORT).show();
-//        }
         httpDataListner.onError(e);
         dismissProgressDialog();
     }
@@ -102,7 +99,7 @@ public class ProgressSubscriber<T> extends Subscriber<T> implements ProgressCanc
      */
     @Override
     public void onNext(T t) {
-        if (!NetWorkUtil.isNetworkConnected()) {
+        if (!NetWorkUtil.isNetworkConnected()) {//断开网络,请求缓存时判断
             Toast.makeText(DemoApplication.getInstance(), "网络异常,请查看你的网络连接", 1).show();
         }
         httpDataListner.onNext(t);

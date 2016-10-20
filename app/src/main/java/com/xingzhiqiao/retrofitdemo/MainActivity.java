@@ -9,7 +9,6 @@ import android.widget.TextView;
 
 import com.xingzhiqiao.retrofitdemo.bean.DailyListBean;
 import com.xingzhiqiao.retrofitdemo.http.HttpDataListner;
-import com.xingzhiqiao.retrofitdemo.http.HttpManger;
 import com.xingzhiqiao.retrofitdemo.http.HttpServer;
 import com.xingzhiqiao.retrofitdemo.http.ProgressSubscriber;
 import com.xingzhiqiao.retrofitdemo.response.BaseResponse;
@@ -48,10 +47,6 @@ public class MainActivity extends AppCompatActivity implements HttpDataListner<B
                 getPlayInfo();
             }
         });
-
-
-        HttpManger.getmInstance();
-
 
     }
 
