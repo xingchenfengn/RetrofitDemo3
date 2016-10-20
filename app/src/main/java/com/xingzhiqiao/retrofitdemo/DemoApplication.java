@@ -8,7 +8,9 @@ import android.app.Application;
 
 public class DemoApplication extends Application {
 
-
+    /***
+     * Application singleton
+     */
     private static DemoApplication mInstance;
 
     @Override
